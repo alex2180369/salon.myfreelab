@@ -21,7 +21,8 @@
  * Apps Script -> «Настройки проекта» (шестерёнка слева) -> «Свойства скрипта» ->
  * добавить TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID.
  *
- * КАК ЗАБИРАТЬ ЗАЯВКИ: лист «Заявки». Фильтр по колонке «Сайт» отделяет проекты друг от друга.
+ * КАК ЗАБИРАТЬ ЗАЯВКИ: у каждого сайта свой лист, он создаётся сам при первой заявке:
+ * club, psy, salon. Листы появятся внизу таблицы. Колонка «Сайт» есть на каждом из них.
  * Заявки содержат личные данные, не открывайте таблицу посторонним.
  */
 
@@ -49,10 +50,12 @@ function doPost(e) {
       return json_({ ok: true });
     }
 
+    // Отдельный лист на каждый сайт: club, psy, salon. Так скриншот таблицы получается чистым.
+    var tab = tabName_(data.site);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName(SHEET_NAME);
+    var sheet = ss.getSheetByName(tab);
     if (!sheet) {
-      sheet = ss.insertSheet(SHEET_NAME);
+      sheet = ss.insertSheet(tab);
       sheet.appendRow(HEADERS);
       sheet.setFrozenRows(1);
       sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold');
@@ -76,6 +79,12 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+}
+
+// club.myfreelab.ru -> «club». Неизвестный или пустой сайт попадает на лист «Заявки».
+function tabName_(site) {
+  var s = String(site || '').toLowerCase().replace(/\.myfreelab\.ru$/, '').replace(/[^a-z0-9_-]/g, '');
+  return s ? s.slice(0, 30) : SHEET_NAME;
 }
 
 function doGet() {
