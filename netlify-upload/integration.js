@@ -8,7 +8,7 @@
  * Никогда не помещайте в код страницы секреты (токены, ключи YCLIENTS).
  */
 window.adminRequestAdapter = {
-  SHEETS_URL: '',
+  SHEETS_URL: 'https://script.google.com/macros/s/AKfycbymy7csfZY35SZP53O13DHC3PkIV5vDFC775UsWtwq1iznGw4myiUYPqRRUUVfVwIB7Gg/exec',
 
   async send(payload) {
     if (!payload || !Array.isArray(payload.items) || payload.items.length === 0) {
